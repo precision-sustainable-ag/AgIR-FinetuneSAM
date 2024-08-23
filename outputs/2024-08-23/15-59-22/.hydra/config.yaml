@@ -1,0 +1,105 @@
+experiment:
+  output: ./output
+  model_type: vit_l
+  checkpoint: ./path/to/checkpoint.pth
+  device: cuda
+  seed: 42
+  learning_rate: 0.001
+  start_epoch: 0
+  lr_drop_epoch: 10
+  max_epoch_num: 12
+  input_size:
+  - 1024
+  - 1024
+  batch_size_train: 4
+  batch_size_valid: 1
+  model_save_fre: 1
+  world_size: 1
+  dist_url: env://
+  rank: 0
+  local_rank: 0
+  find_unused_params: false
+  eval: false
+  visualize: false
+  restore_model: null
+  datasets:
+    train:
+    - name: FSS
+      im_dir: ./data/cascade_psp/fss_all
+      gt_dir: ./data/cascade_psp/fss_all
+      im_ext: .jpg
+      gt_ext: .png
+    - name: DUTS-TR
+      im_dir: ./data/cascade_psp/DUTS-TR
+      gt_dir: ./data/cascade_psp/DUTS-TR
+      im_ext: .jpg
+      gt_ext: .png
+    - name: DUTS-TE
+      im_dir: ./data/cascade_psp/DUTS-TE
+      gt_dir: ./data/cascade_psp/DUTS-TE
+      im_ext: .jpg
+      gt_ext: .png
+    valid:
+    - name: ECSSD
+      im_dir: ./data/cascade_psp/ecssd
+      gt_dir: ./data/cascade_psp/ecssd
+      im_ext: .jpg
+      gt_ext: .png
+    - name: MSRA10K
+      im_dir: ./data/cascade_psp/MSRA_10K
+      gt_dir: ./data/cascade_psp/MSRA_10K
+      im_ext: .jpg
+      gt_ext: .png
+output: ./output
+model_type: vit_l
+checkpoint: ./path/to/checkpoint.pth
+device: cuda
+seed: 42
+learning_rate: 0.001
+start_epoch: 0
+lr_drop_epoch: 10
+max_epoch_num: 12
+input_size:
+- 1024
+- 1024
+batch_size_train: 4
+batch_size_valid: 1
+model_save_fre: 1
+world_size: 1
+dist_url: env://
+rank: 0
+local_rank: 0
+find_unused_params: false
+gpu: None
+distributed: false
+eval: false
+visualize: false
+restore_model: null
+datasets:
+  train:
+  - name: FSS
+    im_dir: ./data/cascade_psp/fss_all
+    gt_dir: ./data/cascade_psp/fss_all
+    im_ext: .jpg
+    gt_ext: .png
+  - name: DUTS-TR
+    im_dir: ./data/cascade_psp/DUTS-TR
+    gt_dir: ./data/cascade_psp/DUTS-TR
+    im_ext: .jpg
+    gt_ext: .png
+  - name: DUTS-TE
+    im_dir: ./data/cascade_psp/DUTS-TE
+    gt_dir: ./data/cascade_psp/DUTS-TE
+    im_ext: .jpg
+    gt_ext: .png
+  valid:
+  - name: ECSSD
+    im_dir: ./data/cascade_psp/ecssd
+    gt_dir: ./data/cascade_psp/ecssd
+    im_ext: .jpg
+    gt_ext: .png
+  - name: MSRA10K
+    im_dir: ./data/cascade_psp/MSRA_10K
+    gt_dir: ./data/cascade_psp/MSRA_10K
+    im_ext: .jpg
+    gt_ext: .png

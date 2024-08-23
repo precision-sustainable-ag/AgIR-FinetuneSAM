@@ -1,0 +1,60 @@
+defaults:
+  - experiment: default
+  - _self_
+
+output: ./output # Path to the directory where masks and checkpoints will be output
+model_type: vit_l # The type of model to load, in ['vit_h', 'vit_l', 'vit_b']
+checkpoint: ./path/to/checkpoint.pth # The path to the SAM checkpoint to use for mask generation.
+device: cuda # The device to run generation on.
+
+seed: 42
+learning_rate: 1e-3
+start_epoch: 0
+lr_drop_epoch: 10
+max_epoch_num: 12
+input_size: [1024, 1024]
+batch_size_train: 4
+batch_size_valid: 1
+model_save_fre: 1
+
+world_size: 1 # number of distributed processes
+dist_url: env:// # url used to set up distributed training
+rank: 0 # number of distributed processes
+local_rank: 0 # local rank for dist
+find_unused_params: false
+gpu: None
+distributed: false
+
+
+eval: false
+visualize: false
+restore_model: null
+
+datasets:
+  train:
+    - name: FSS
+      im_dir: ./data/cascade_psp/fss_all
+      gt_dir: ./data/cascade_psp/fss_all
+      im_ext: .jpg
+      gt_ext: .png
+    - name: DUTS-TR
+      im_dir: ./data/cascade_psp/DUTS-TR
+      gt_dir: ./data/cascade_psp/DUTS-TR
+      im_ext: .jpg
+      gt_ext: .png
+    - name: DUTS-TE
+      im_dir: ./data/cascade_psp/DUTS-TE
+      gt_dir: ./data/cascade_psp/DUTS-TE
+      im_ext: .jpg
+      gt_ext: .png
+  valid:
+    - name: ECSSD
+      im_dir: ./data/cascade_psp/ecssd
+      gt_dir: ./data/cascade_psp/ecssd
+      im_ext: .jpg
+      gt_ext: .png
+    - name: MSRA10K
+      im_dir: ./data/cascade_psp/MSRA_10K
+      gt_dir: ./data/cascade_psp/MSRA_10K
+      im_ext: .jpg
+      gt_ext: .png
