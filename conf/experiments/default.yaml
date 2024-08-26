@@ -1,0 +1,33 @@
+output: ./work_dirs/${model_type} # Path to the directory where masks and checkpoints will be output
+model_type: vit_h # The type of model to load, in ['vit_h', 'vit_l', 'vit_b']
+checkpoint: ./pretrained_checkpoint/sam_vit_h_4b8939.pth # The path to the SAM checkpoint to use for mask generation.
+device: cuda # The device to run generation on.
+
+
+seed: 42
+learning_rate: 1e-3
+start_epoch: 0
+lr_drop_epoch: 10
+max_epoch_num: 12
+input_size: [1024, 1024]
+batch_size_train: 4
+batch_size_valid: 1
+model_save_fre: 1
+
+eval: false
+visualize: false
+restore_model: null
+
+datasets:
+  train:
+    - name: FIELD
+      im_dir: ./data/FIELD/train/images
+      gt_dir: ./data/FIELD/train/masks
+      im_ext: .JPG
+      gt_ext: .png
+  valid:
+    - name: FIELD
+      im_dir: ./data/FIELD/val/images
+      gt_dir: ./data/FIELD/val/masks
+      im_ext: .JPG
+      gt_ext: .png

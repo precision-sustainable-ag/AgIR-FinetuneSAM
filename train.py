@@ -273,10 +273,10 @@ def show_box(box, ax):
 @hydra.main(version_base="1.3", config_path="conf", config_name="config")
 def main(cfg: DictConfig):
 
-    net = MaskDecoderHQ(cfg.model_type)
+    net = MaskDecoderHQ(cfg.experiments.model_type)
 
-    train_datasets = cfg.datasets.train
-    valid_datasets = cfg.datasets.valid
+    train_datasets = cfg.experiments.datasets.train
+    valid_datasets = cfg.experiments.datasets.valid
 
     misc.init_distributed_mode(cfg)
     print('world size: {}'.format(cfg.world_size))
@@ -284,13 +284,13 @@ def main(cfg: DictConfig):
     print('local_rank: {}'.format(cfg.local_rank))
     print("cfg: " + str(cfg) + '\n')
 
-    seed = cfg.seed + misc.get_rank()
+    seed = cfg.experiments.seed + misc.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
 
     ### --- Step 1: Train or Valid dataset ---
-    if not cfg.eval:
+    if not cfg.experiments.eval:
         print("--- create training dataloader ---")
         train_im_gt_list = get_im_gt_name_dict(train_datasets, flag="train")
         train_dataloaders, train_datasets = create_dataloaders(train_im_gt_list,
@@ -298,7 +298,7 @@ def main(cfg: DictConfig):
                                                                     RandomHFlip(),
                                                                     LargeScaleJitter()
                                                                     ],
-                                                        batch_size = cfg.batch_size_train,
+                                                        batch_size = cfg.experiments.batch_size_train,
                                                         training = True)
         print(len(train_dataloaders), " train dataloaders created")
 
@@ -306,9 +306,9 @@ def main(cfg: DictConfig):
     valid_im_gt_list = get_im_gt_name_dict(valid_datasets, flag="valid")
     valid_dataloaders, valid_datasets = create_dataloaders(valid_im_gt_list,
                                                           my_transforms = [
-                                                                        Resize(cfg.input_size)
+                                                                        Resize(cfg.experiments.input_size)
                                                                     ],
-                                                          batch_size=cfg.batch_size_valid,
+                                                          batch_size=cfg.experiments.batch_size_valid,
                                                           training=False)
     print(len(valid_dataloaders), " valid dataloaders created")
     
@@ -320,41 +320,41 @@ def main(cfg: DictConfig):
 
  
     ### --- Step 3: Train or Evaluate ---
-    if not cfg.eval:
+    if not cfg.experiments.eval:
         print("--- define optimizer ---")
-        optimizer = optim.Adam(net_without_ddp.parameters(), lr=cfg.learning_rate, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, cfg.lr_drop_epoch)
-        lr_scheduler.last_epoch = cfg.start_epoch
+        optimizer = optim.Adam(net_without_ddp.parameters(), lr=cfg.experiments.learning_rate, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, cfg.experiments.lr_drop_epoch)
+        lr_scheduler.last_epoch = cfg.experiments.start_epoch
 
         train(cfg, net, optimizer, train_dataloaders, valid_dataloaders, lr_scheduler)
     else:
-        sam = sam_model_registry[cfg.model_type](checkpoint=cfg.checkpoint)
-        _ = sam.to(device=cfg.device)
+        sam = sam_model_registry[cfg.experiments.model_type](checkpoint=cfg.experiments.checkpoint)
+        _ = sam.to(device=cfg.experiments.device)
         sam = torch.nn.parallel.DistributedDataParallel(sam, device_ids=[cfg.gpu], find_unused_parameters=cfg.find_unused_params)
 
-        if cfg.restore_model:
-            print("restore model from:", cfg.restore_model)
+        if cfg.experiments.restore_model:
+            print("restore model from:", cfg.experiments.restore_model)
             if torch.cuda.is_available():
-                net_without_ddp.load_state_dict(torch.load(cfg.restore_model))
+                net_without_ddp.load_state_dict(torch.load(cfg.experiments.restore_model))
             else:
-                net_without_ddp.load_state_dict(torch.load(cfg.restore_model,map_location="cpu"))
+                net_without_ddp.load_state_dict(torch.load(cfg.experiments.restore_model,map_location="cpu"))
     
-        evaluate(cfg, net, sam, valid_dataloaders, cfg.visualize)
+        evaluate(cfg, net, sam, valid_dataloaders, cfg.experiments.visualize)
 
 
 def train(cfg, net, optimizer, train_dataloaders, valid_dataloaders, lr_scheduler):
     if misc.is_main_process():
-        os.makedirs(cfg.output, exist_ok=True)
+        os.makedirs(cfg.experiments.output, exist_ok=True)
 
-    epoch_start = cfg.start_epoch
-    epoch_num = cfg.max_epoch_num
+    epoch_start = cfg.experiments.start_epoch
+    epoch_num = cfg.experiments.max_epoch_num
     train_num = len(train_dataloaders)
 
     net.train()
-    _ = net.to(device=cfg.device)
+    _ = net.to(device=cfg.experiments.device)
     
-    sam = sam_model_registry[cfg.model_type](checkpoint=cfg.checkpoint)
-    _ = sam.to(device=cfg.device)
+    sam = sam_model_registry[cfg.experiments.model_type](checkpoint=cfg.experiments.checkpoint)
+    _ = sam.to(device=cfg.experiments.device)
     sam = torch.nn.parallel.DistributedDataParallel(sam, device_ids=[cfg.gpu], find_unused_parameters=cfg.find_unused_params)
     
     for epoch in range(epoch_start,epoch_num): 
@@ -447,24 +447,24 @@ def train(cfg, net, optimizer, train_dataloaders, valid_dataloaders, lr_schedule
         
         net.train()  
 
-        if epoch % cfg.model_save_fre == 0:
+        if epoch % cfg.experiments.model_save_fre == 0:
             model_name = "/epoch_"+str(epoch)+".pth"
-            print('come here save at', cfg.output + model_name)
-            misc.save_on_master(net.module.state_dict(), cfg.output + model_name)
+            print('come here save at', cfg.experiments.output + model_name)
+            misc.save_on_master(net.module.state_dict(), cfg.experiments.output + model_name)
     
     # Finish training
     print("Training Reaches The Maximum Epoch Number")
     
     # merge sam and hq_decoder
     if misc.is_main_process():
-        sam_ckpt = torch.load(cfg.checkpoint)
-        hq_decoder = torch.load(cfg.output + model_name)
+        sam_ckpt = torch.load(cfg.experiments.checkpoint)
+        hq_decoder = torch.load(cfg.experiments.output + model_name)
         for key in hq_decoder.keys():
             sam_key = 'mask_decoder.'+key
             if sam_key not in sam_ckpt.keys():
                 sam_ckpt[sam_key] = hq_decoder[key]
         model_name = "/sam_hq_epoch_"+str(epoch)+".pth"
-        torch.save(sam_ckpt, cfg.output + model_name)
+        torch.save(sam_ckpt, cfg.experiments.output + model_name)
 
 
 
@@ -555,12 +555,12 @@ def evaluate(cfg, net, sam, valid_dataloaders, visualize=False):
 
             if visualize:
                 print("visualize")
-                os.makedirs(cfg.output, exist_ok=True)
+                os.makedirs(cfg.experiments.output, exist_ok=True)
                 masks_hq_vis = (F.interpolate(masks_hq.detach(), (1024, 1024), mode="bilinear", align_corners=False) > 0).cpu()
                 for ii in range(len(imgs)):
                     base = data_val['imidx'][ii].item()
                     print('base:', base)
-                    save_base = os.path.join(cfg.output, str(k)+'_'+ str(base))
+                    save_base = os.path.join(cfg.experiments.output, str(k)+'_'+ str(base))
                     imgs_ii = imgs[ii].astype(dtype=np.uint8)
                     show_iou = torch.tensor([iou.item()])
                     show_boundary_iou = torch.tensor([boundary_iou.item()])

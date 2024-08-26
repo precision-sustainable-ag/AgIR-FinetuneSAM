@@ -1,22 +1,6 @@
 defaults:
-  - experiment: default
-  - datasets: default
+  - experiments: default
   - _self_
-
-output: ./work_dirs/${model_type} # Path to the directory where masks and checkpoints will be output
-model_type: vit_h # The type of model to load, in ['vit_h', 'vit_l', 'vit_b']
-checkpoint: ./pretrained_checkpoint/sam_vit_h_4b8939.pth # The path to the SAM checkpoint to use for mask generation.
-device: cuda # The device to run generation on.
-
-seed: 42
-learning_rate: 1e-3
-start_epoch: 0
-lr_drop_epoch: 10
-max_epoch_num: 100
-input_size: [1024, 1024]
-batch_size_train: 8
-batch_size_valid: 1
-model_save_fre: 10
 
 world_size: 1 # number of distributed processes
 dist_url: env:// # url used to set up distributed training
@@ -26,8 +10,3 @@ find_unused_params: false
 gpu: None
 distributed: false
 dist_backend: nccl
-
-
-eval: false
-visualize: false
-restore_model: null
