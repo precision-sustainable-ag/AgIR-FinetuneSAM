@@ -106,8 +106,8 @@ class Resize(object):
     def __call__(self,sample):
         imidx, image, label, shape =  sample['imidx'], sample['image'], sample['label'], sample['shape']
 
-        image = torch.squeeze(F.interpolate(torch.unsqueeze(image,0),self.size,mode='bilinear'),dim=0)
-        label = torch.squeeze(F.interpolate(torch.unsqueeze(label,0),self.size,mode='bilinear'),dim=0)
+        image = torch.squeeze(F.interpolate(torch.unsqueeze(image,0),tuple(self.size),mode='bilinear'),dim=0)
+        label = torch.squeeze(F.interpolate(torch.unsqueeze(label,0),tuple(self.size),mode='bilinear'),dim=0)
 
         return {'imidx':imidx,'image':image, 'label':label, 'shape':torch.tensor(self.size)}
 
