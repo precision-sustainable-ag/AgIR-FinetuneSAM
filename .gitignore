@@ -2,7 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+logging
+report
+models
+data/custom_data_fine_tuning
 work_dirs
 # C extensions
 *.so

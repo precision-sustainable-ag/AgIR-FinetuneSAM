@@ -1,0 +1,39 @@
+# Hydra defaults and settings. Ignore these (don't change)
+defaults:
+  - override hydra/job_logging: custom # custom logging 
+  - _self_
+
+hydra:
+  run:
+    dir: ${logs.logdir}/${job.job_now}
+  output_subdir: ${hydra.run.dir}/hydra
+
+pipeline:
+  # - prepare_custom_dataset
+  - fine_tune_OOP
+
+general:
+  task: # Leave empty as placeholder
+  workdir: ${hydra:runtime.cwd}  # where the code is executed
+
+data:
+  datadir: ${general.workdir}/data
+  bbox_dir: ${data.datadir}/custom_data_fine_tuning/bounding_boxes
+  cutout_dir: ${data.datadir}/custom_data_fine_tuning/cutouts
+  images_dir: ${data.datadir}/custom_data_fine_tuning/images
+  masks_dir: ${data.datadir}/custom_data_fine_tuning/masks
+  sam_checkpoint: ${data.datadir}/models/sam/sam_checkpoints/sam_vit_b_01ec64.pth
+
+report:
+  report_dir: ${general.workdir}/report
+
+logs:
+  logdir: ${general.workdir}/logging
+
+job:
+  job_now_date: &nowdir ${now:%Y-%m-%d}
+  job_now_time: ${now:%H_%M_%S}
+  job_now: ${job.job_now_date}/${job.job_now_time} 
+  jobdir: ${data.datadir}/${job.job_now}
+
+
