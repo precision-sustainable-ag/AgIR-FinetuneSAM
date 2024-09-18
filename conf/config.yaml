@@ -9,8 +9,11 @@ hydra:
   output_subdir: ${hydra.run.dir}/hydra
 
 pipeline:
-  # - prepare_custom_dataset
-  - fine_tune_OOP
+  - fine_tune
+
+train:
+  batch_size: 4
+  num_workers: 4
 
 general:
   task: # Leave empty as placeholder
