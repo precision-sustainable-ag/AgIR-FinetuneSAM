@@ -21,11 +21,14 @@ general:
 
 data:
   datadir: ${general.workdir}/data
-  bbox_dir: ${data.datadir}/custom_data_fine_tuning/bounding_boxes
-  cutout_dir: ${data.datadir}/custom_data_fine_tuning/cutouts
-  images_dir: ${data.datadir}/custom_data_fine_tuning/images
-  masks_dir: ${data.datadir}/custom_data_fine_tuning/masks
+  bbox_dir: ${data.datadir}/FIELD/train/bbox_labels
+  images_dir: ${data.datadir}/FIELD/train/images
+  masks_dir: ${data.datadir}/FIELD/train/masks
   sam_checkpoint: ${data.datadir}/models/sam/sam_checkpoints/sam_vit_b_01ec64.pth
+
+training:
+  lr: 1e-4
+  wd: 0
 
 report:
   report_dir: ${general.workdir}/report
