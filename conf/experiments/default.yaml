@@ -1,0 +1,24 @@
+project_name: Test 
+
+epochs: 50
+save_every_n_epochs: 5   # Save model every N epochs
+
+model_type: vit_b
+sam_checkpoint: ${data.datadir}/models/sam/sam_checkpoints/sam_vit_b_01ec64.pth
+
+train:
+  batch_size: 2
+  lr: 0.0001
+  weight_decay: 0.0001
+  num_workers: 8
+  train_image_dir: ${data.datadir}/FIELD/train/images
+  train_mask_dir: ${data.datadir}/FIELD/train/masks
+  train_bbox_dir: ${data.datadir}/FIELD/train/bbox_labels
+
+val:
+  batch_size: 1
+  num_workers: 8
+  val_every_n_epochs: 5  # Validate model every N epochs
+  val_image_dir: ${data.datadir}/FIELD/val/images
+  val_mask_dir: ${data.datadir}/FIELD/val/masks
+  val_bbox_dir: ${data.datadir}/FIELD/val/bbox_labels

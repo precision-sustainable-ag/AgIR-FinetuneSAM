@@ -1,6 +1,8 @@
 # Hydra defaults and settings. Ignore these (don't change)
 defaults:
+  - experiments: default
   - override hydra/job_logging: custom # custom logging 
+  
   - _self_
 
 hydra:
@@ -18,11 +20,13 @@ general:
 
 data:
   datadir: ${general.workdir}/data
-  bbox_dir: ${data.datadir}/custom_data_fine_tuning/bounding_boxes
+  bbox_dir: ${data.datadir}/FIELD/train/bbox_labels
   cutout_dir: ${data.datadir}/custom_data_fine_tuning/cutouts
-  images_dir: ${data.datadir}/custom_data_fine_tuning/images
-  masks_dir: ${data.datadir}/custom_data_fine_tuning/masks
+  images_dir: ${data.datadir}/FIELD/train/images
+  masks_dir: ${data.datadir}/FIELD/train/masks
   sam_checkpoint: ${data.datadir}/models/sam/sam_checkpoints/sam_vit_b_01ec64.pth
+
+projects_dir: ${general.workdir}/projects/${experiments.project_name}
 
 report:
   report_dir: ${general.workdir}/report

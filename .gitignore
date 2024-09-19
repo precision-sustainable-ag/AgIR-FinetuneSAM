@@ -2,9 +2,14 @@
 __pycache__/
 *.py[cod]
 *$py.class
+outputs
+inference_results
+notebooks
+pretrained_checkpoint
 logging
 report
 models
+data
 data/custom_data_fine_tuning
 work_dirs
 # C extensions
