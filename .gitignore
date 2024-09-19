@@ -7,6 +7,7 @@ report
 models
 data/custom_data_fine_tuning
 work_dirs
+data/FIELD
 # C extensions
 *.so
 
